@@ -7,6 +7,23 @@ use Purli\Interfaces\HandlerInterface;
 
 /**
  * Class Purli
+ * 
+ * @method get($uri)
+ * @method post($uri)
+ * @method put($uri)
+ * @method delete($uri)
+ * @method request($uri, $method)
+ * @method setParams(array $params)
+ * @method setParam($key, $value)
+ * @method setBody($body)
+ * @method setHeader($key, $value)
+ * @method setUserAgent($agent)
+ * @method setConnectionTimeout($timeout)
+ * @method setKeepAlive($keepAlive)
+ * @method response()
+ * @method close()
+ * @method getHandler()
+ * @method getHandlerType()
  */
 class Purli
 {

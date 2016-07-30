@@ -1,7 +1,6 @@
 Purli
 =
 [![DUB](https://img.shields.io/dub/l/vibe-d.svg)](http://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-0.9.0-orange.svg)](https://packagist.org/packages/kajna/Purli)
 
 Lightweight library with object-oriented interface for sending HTTP requests
 
@@ -23,11 +22,11 @@ Usage examples
 
 ```php
 try {
-	$Purli = (new \Purli\Purli())
-			->get('http://example.com')
+	$purli = (new \Purli\Purli()
+			->get('http://www.test.com')
 			->close();
 
-	$response = $Purli->response();
+	$response = $purli->response();
 
 	echo $response->asText();
 } catch(\Exception $e) {
