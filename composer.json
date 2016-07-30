@@ -1,0 +1,22 @@
+{
+    "name": "kajna/purli",
+    "description": " Lightweight library with Object-Oriented interface for sending HTTP requests",
+    "keywords": ["http", "https", "curl", "socket", "rest", "json", "xml"],
+    "authors": [
+        {
+            "name": "Milos Kajnaco",
+            "email": "milos@caenazzo.com"
+        }
+    ],
+    "license": "MIT",
+    "type": "library",
+    "require": {
+        "php": ">=5.4.0"
+    },
+    "minimum-stability" : "dev",
+    "autoload": {
+        "psr-4": {
+            "Purli\\": "src/Purli/"
+        }
+    }
+}
