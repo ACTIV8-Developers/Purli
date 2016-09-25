@@ -40,23 +40,10 @@ interface HandlerInterface
     public function request($uri, $method);
 
     /**
-     * @param array $params
+     * @param array|string $params
      * @return self
      */
-    public function setParams(array $params);
-
-    /**
-     * @param $key
-     * @param $value
-     * @return self
-     */
-    public function setParam($key, $value);
-
-    /**
-     * @param $body
-     * @return mixed
-     */
-    public function setBody($body);
+    public function setParams($params);
 
     /**
      * @param $key

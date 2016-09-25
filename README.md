@@ -20,7 +20,7 @@ This package is available via Composer:
 Usage examples
 =
 
-#### Fetching HTML page using GET method and CURL handler
+#### Fetching data using GET method and CURL handler
 Minimal example, Purli by default uses CURL handler if available otherwise fallback to socket.
 ```php
 try {
@@ -36,7 +36,7 @@ try {
 }
 ```
 
-#### Fetching HTML page using GET method and socket handler
+#### Fetching data using GET method and socket handler
 If explicitly set Purli will use PHP sockets to make request regardless if CURL is installed or not
 ```php
 try {
@@ -52,29 +52,24 @@ try {
 }
 ```
 
-#### Sending and receiving JSON data using PUT method
-
+#### Fetching data using POST method
 ```php
 try {
     $data = array('foo' => 'bar');
-    $json = json_encode($data);
-    
-    $purli = (new \Purli\Purli(\Purli\Purli::SOCKET))
-            ->setConnectionTimeout(3)
-            ->setHeader('Content-Type', 'application/json')
-            ->setHeader('Connection', 'Close')
-            ->setHeader('Content-Length', strlen($json))
-            ->setBody($json)
-            ->post('http://www.example.com')
-            ->close();
-    
+
+    $purli = (new \Purli\Purli())
+        ->setParams($data)
+        ->post('http://www.example.com')
+        ->close();
+
     $response = $purli->response();
-    
-    print_r($response->asObject());
+
+    print_r($response->asText());
 } catch(\Exception $e) {
-	echo $e->getMessage();
+    echo $e->getMessage();
 }
 ```
+
 #### Sending and receiving XML data using POST method
 
 ```php
@@ -85,7 +80,7 @@ try {
         ->setUserAgent('curl 7.16.1 (i386-portbld-freebsd6.2) libcurl/7.16.1 OpenSSL/0.9.7m zlib/1.2.3')
         ->setHeader('Content-Type', 'text/xml')
         ->setHeader('Content-Length', strlen($data))
-        ->setBody($data)
+        ->setParams($data)
         ->post('http://www.example.com')
         ->close();
 
@@ -94,6 +89,29 @@ try {
     print_r($response->asArray());
 } catch(\Exception $e) {
     echo $e->getMessage();
+}
+```
+
+#### Sending and receiving JSON data using PUT method
+```php
+try {
+    $data = array('foo' => 'bar');
+    $json = json_encode($data);
+    
+    $purli = (new \Purli\Purli(\Purli\Purli::SOCKET))
+            ->setConnectionTimeout(3)
+            ->setHeader('Content-Type', 'application/json')
+            ->setHeader('Connection', 'Close')
+            ->setHeader('Content-Length', strlen($json))
+            ->setParams($json)
+            ->post('http://www.example.com')
+            ->close();
+    
+    $response = $purli->response();
+    
+    print_r($response->asObject());
+} catch(\Exception $e) {
+	echo $e->getMessage();
 }
 ```
 

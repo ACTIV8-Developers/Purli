@@ -29,13 +29,6 @@ class Socket implements HandlerInterface
     protected $parameters = [];
 
     /**
-     * Raw body to send request with
-     *
-     * @var string
-     */
-    protected $body = '';
-
-    /**
      * An associative array of headers to send along with requests
      *
      * @var array
@@ -117,12 +110,13 @@ class Socket implements HandlerInterface
         $parsedUri = parse_url($uri);
 
         $data = '';
-        foreach($this->parameters as $key => $value) {
-            $data .= ($data ? '&' : '') . urlencode($key) . '=' . urlencode($value);
-        }
 
-        if ($this->body) {
-            $data .= $this->body;
+        if (is_array($this->parameters)) {
+            foreach ($this->parameters as $key => $value) {
+                $data .= ($data ? '&' : '') . urlencode($key) . '=' . urlencode($value);
+            }
+        } else {
+            $data = $this->parameters;
         }
 
         switch ($parsedUri['scheme']) {
@@ -196,33 +190,12 @@ class Socket implements HandlerInterface
     }
 
     /**
-     * @param array $params
+     * @param array|string $params
      * @return self
      */
-    public function setParams(array $params)
+    public function setParams($params)
     {
         $this->parameters = $params;
-        return $this;
-    }
-
-    /**
-     * @param $key
-     * @param $value
-     * @return self
-     */
-    public function setParam($key, $value)
-    {
-        $this->parameters[$key] = $value;
-        return $this;
-    }
-
-    /**
-     * @param string $body
-     * @return self
-     */
-    public function setBody($body)
-    {
-        $this->body = $body;
         return $this;
     }
 

@@ -16,16 +16,9 @@ class Curl implements HandlerInterface
 	/**
 	 * Parameters to be sent along with request
 	 * 
-	 * @var array
+	 * @var array|string
 	 */
-	protected $parameters = [];
-
-	/**
-	 * Raw body to send request with
-	 * 
-	 * @var string
-	 */
-	protected $body = '';
+	protected $parameters = null;
 
 	/**
 	 * An associative array of headers to send along with requests
@@ -85,18 +78,13 @@ class Curl implements HandlerInterface
 	/**
 	 * Sets the CURLOPT options for the current curl
 	 *
-	 * @param $params
-	 * @param $body
+	 * @param $data
 	 * @return void
 	 */
-	protected function setCurlOptions($params = null, $body = null) {
+	protected function setCurlOptions($data = null) {
 		// Request parameters
-		if ($params) {
-			curl_setopt($this->curl, CURLOPT_POSTFIELDS, $params);
-		}
-
-		if ($body) {
-			curl_setopt($this->curl, CURLOPT_POSTFIELDS, $body);
+		if ($data) {
+			curl_setopt($this->curl, CURLOPT_POSTFIELDS, $data);
 		}
 
 		// Set some default CURL options
@@ -240,36 +228,15 @@ class Curl implements HandlerInterface
 		return $this;
 	}
 
-	/**
-	 * @param array $params
-	 * @return self
-	 */
-	public function setParams(array $params)
-	{
-		$this->parameters = $params;
-		return $this;
-	}
-
-	/**
-	 * @param $key
-	 * @param $value
-	 * @return self
-	 */
-	public function setParam($key, $value)
-	{
-		$this->parameters[$key] = $value;
-		return $this;
-	}
-
-	/**
-	 * @param string $body
-	 * @return self
-	 */
-	public function setBody($body)
-	{
-		$this->body = $body;
-		return $this;
-	}
+    /**
+     * @param array|string $params
+     * @return self
+     */
+    public function setParams($params)
+    {
+        $this->parameters = $params;
+        return $this;
+    }
 
 	/**
 	 * @param $uri
@@ -331,12 +298,22 @@ class Curl implements HandlerInterface
 		// Set uri
 		curl_setopt($this->curl, CURLOPT_URL, $uri);
 
-		$this->fillRequest($method, $this->body);
+        $data = '';
+
+        if (is_array($this->parameters)) {
+            foreach ($this->parameters as $key => $value) {
+                $data .= ($data ? '&' : '') . urlencode($key) . '=' . urlencode($value);
+            }
+        } else {
+            $data = $this->parameters;
+        }
+
+		$this->fillRequest($method, $data);
 
 		// Set headers/options
 		$this->setCurlHeaders();
 		$this->setCurlRequestMethod($method);
-		$this->setCurlOptions($this->parameters, $this->body);
+		$this->setCurlOptions($data);
 
 		// Execute cUrl and get response
 		$response = curl_exec($this->curl);
@@ -358,17 +335,17 @@ class Curl implements HandlerInterface
 	 */
 	protected function fillRequest($method, $data)
 	{
-		if (!$this->keepAlive && !isset($this->headers['Connection'])) {
-			$this->headers['Connection'] = 'Close';
-		}
+        if (!$this->keepAlive && !isset($this->headers['Connection'])) {
+            $this->headers['Connection'] = 'Close';
+        }
 
-		if (!isset($this->headers['Content-Type']) && in_array($method, ['POST', 'PUT', 'DELETE'])) {
-			$this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
-		}
+        if (!isset($this->headers['Content-Type']) && in_array($method, ['POST', 'PUT', 'DELETE'])) {
+            $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
+        }
 
-		if (!isset($this->headers['Content-Length'])) {
-			$this->headers['Content-Length'] = strlen($data);
-		}
+        if (!isset($this->headers['Content-Length']) && in_array($method, ['POST', 'PUT', 'DELETE'])) {
+            $this->headers['Content-Length'] = strlen($data);
+        }
 	}
 
 	/**

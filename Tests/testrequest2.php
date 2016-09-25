@@ -14,6 +14,8 @@ try {
     echo $e->getMessage();
 }
 
+echo '<hr>';
+
 // Fetching HTML page using POST request
 try {
     $purli = (new \Purli\Purli())
@@ -28,6 +30,8 @@ try {
     echo $e->getMessage();
 }
 
+echo '<hr>';
+
 // Sending and receiving JSON data using PUT
 try {
     $data = array('foo' => 'bar');
@@ -38,7 +42,7 @@ try {
         ->setHeader('Content-Type', 'application/json')
         ->setHeader('Connection', 'Close')
         ->setHeader('Content-Length', strlen($json))
-        ->setBody($json)
+        ->setParams($json)
         ->post('http://localhost/Purli/Tests/testresponsejson.php')
         ->close();
 
@@ -49,6 +53,8 @@ try {
     echo $e->getMessage();
 }
 
+echo '<hr>';
+
 // Sending and receiving XML data using POST
 try {
     $data = '<root><foo>bar</foo></root>';
@@ -57,7 +63,7 @@ try {
         ->setUserAgent('curl 7.16.1 (i386-portbld-freebsd6.2) libcurl/7.16.1 OpenSSL/0.9.7m zlib/1.2.3')
         ->setHeader('Content-Type', 'text/xml')
         ->setHeader('Content-Length', strlen($data))
-        ->setBody($data)
+        ->setParams($data)
         ->post('http://localhost/Purli/Tests/testresponsexml.php')
         ->close();
 
@@ -67,6 +73,8 @@ try {
 } catch(\Exception $e) {
     echo $e->getMessage();
 }
+
+echo '<hr>';
 
 // Setting custom CURL option
 try {
@@ -83,6 +91,19 @@ try {
     $response = $purli->response();
 
     echo $response->asText();
+} catch(\Exception $e) {
+    echo $e->getMessage();
+}
+
+// Fetch SSL page
+try {
+    $purli = (new \Purli\Purli())
+        ->get('https://www.youtube.com/')
+        ->close();
+
+    $response = $purli->response();
+
+    echo htmlentities($response->asText());
 } catch(\Exception $e) {
     echo $e->getMessage();
 }
