@@ -30,7 +30,7 @@ class Purli
 	/**
 	 * Version
 	 */
-	const VERSION = '2.0.0';
+	const VERSION = '1.0.0rc';
 
 	/**
 	 * Use CURL handler
@@ -41,11 +41,11 @@ class Purli
 	 * Use Socket handler
 	 */
 	const SOCKET = 2;
-	
+
 	/**
-	 * @var HandlerInterface
+	 * @var $handler HandlerInterface
 	 */ 
-	protected $client = null;
+	protected $handler = null;
 
 	/**
 	 * Class construct
@@ -53,10 +53,10 @@ class Purli
 	 */
 	public function __construct($use = self::CURL)
 	{
-		if ($this->isCurlnstalled() && $use === self::CURL) {
-			$this->client = new Curl();
+		if ($this->isCurlInstalled() && $use === self::CURL) {
+			$this->handler = new Curl();
 		} else {
-			$this->client = new Socket();
+			$this->handler = new Socket();
 		}
 	}
 
@@ -68,13 +68,13 @@ class Purli
 	 */
 	public function __call($method, $args)
 	{
-		return call_user_func_array([$this->client, $method], $args);
+		return call_user_func_array([$this->handler, $method], $args);
 	}
 	
 	/**
 	 * @return bool
 	 */ 
-	protected function isCurlnstalled()
+	protected function isCurlInstalled()
 	{
 		return function_exists('curl_version');
 	}

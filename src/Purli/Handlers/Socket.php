@@ -205,7 +205,6 @@ class Socket implements HandlerInterface
         return $this;
     }
 
-
     /**
      * @param $key
      * @param $value

@@ -1,11 +1,12 @@
 Purli
 =
 [![DUB](https://img.shields.io/dub/l/vibe-d.svg)](http://opensource.org/licenses/MIT)
+[![Version](https://img.shields.io/badge/version-1.0.0rc-orange.svg)](https://github.com/Kajna/Purli/releases)
 
-Lightweight library with object-oriented interface for sending HTTP requests
+Purli (PHP Url Interface) is lightweight library with object-oriented interface for sending HTTP requests. 
 
-### Installing
-
+Installing
+=
 This package is available via Composer:
 
 ```json
@@ -18,62 +19,104 @@ This package is available via Composer:
 
 Usage examples
 =
-### Fetching HTML page using GET
 
+#### Fetching HTML page using GET method and CURL handler
+Minimal example, Purli by default uses CURL handler if available otherwise fallback to socket.
 ```php
 try {
-	$purli = (new \Purli\Purli()
-			->get('http://www.test.com')
-			->close();
+    $purli = (new \Purli\Purli())
+        ->get('http://www.example.com')
+        ->close();
 
-	$response = $purli->response();
+    $response = $purli->response();
 
-	echo $response->asText();
+    echo $response->asText();
+} catch(\Exception $e) {
+    echo $e->getMessage();
+}
+```
+
+#### Fetching HTML page using GET method and socket handler
+If explicitly set Purli will use PHP sockets to make request regardless if CURL is installed or not
+```php
+try {
+    $purli = (new \Purli\Purli(\Purli\Purli::SOCKET))
+            ->get('http://example.com')
+            ->close();
+    
+    $response = $purli->response();
+    
+    echo $response->asText();
 } catch(\Exception $e) {
 	echo $e->getMessage();
 }
 ```
-### Sending and receiving JSON data using PUT with connection timeout
+
+#### Sending and receiving JSON data using PUT method
 
 ```php
 try {
-	$data = array('foo' => 'bar');
-	$json = json_encode($data);
-
-	$Purli = (new \Purli\Purli())
-			->setConnectionTimeout(3)
-			->setHeader('Content-Type', 'application/json')
-			->setHeader('Content-Length', strlen($json))
-			->setParams($json)
-			->put('http://example.com')
-			->close();
-
-	$response = $Purli->response();
-
-	print_r($response->asObject());
+    $data = array('foo' => 'bar');
+    $json = json_encode($data);
+    
+    $purli = (new \Purli\Purli(\Purli\Purli::SOCKET))
+            ->setConnectionTimeout(3)
+            ->setHeader('Content-Type', 'application/json')
+            ->setHeader('Connection', 'Close')
+            ->setHeader('Content-Length', strlen($json))
+            ->setBody($json)
+            ->post('http://www.example.com')
+            ->close();
+    
+    $response = $purli->response();
+    
+    print_r($response->asObject());
 } catch(\Exception $e) {
 	echo $e->getMessage();
 }
 ```
-### Sending and receiving XML data using POST
+#### Sending and receiving XML data using POST method
 
 ```php
 try {
-	$data = '<root><foo>bar</foo></root>';
+    $data = '<root><foo>bar</foo></root>';
 
-	$Purli = (new \Purli\Purli())
-			->setUserAgent('curl 7.16.1 (i386-portbld-freebsd6.2) libcurl/7.16.1 OpenSSL/0.9.7m zlib/1.2.3')
-			->setHeader('Content-Type', 'text/xml')
-			->setHeader('Content-Length', strlen($data))
-			->setParams($data)
-			->post('http://example.com')
-			->close();
+    $purli = (new \Purli\Purli())
+        ->setUserAgent('curl 7.16.1 (i386-portbld-freebsd6.2) libcurl/7.16.1 OpenSSL/0.9.7m zlib/1.2.3')
+        ->setHeader('Content-Type', 'text/xml')
+        ->setHeader('Content-Length', strlen($data))
+        ->setBody($data)
+        ->post('http://www.example.com')
+        ->close();
 
-	$response = $Purli->response();
+    $response = $purli->response();
 
-	print_r($response->asArray());
+    print_r($response->asArray());
 } catch(\Exception $e) {
-	echo $e->getMessage();
+    echo $e->getMessage();
+}
+```
+
+#### Setting custom CURL option
+If CURL extension is installed by default Purli will use it, 
+you can always get CURL handler object and set custom option if more flexibility is needed
+```php
+try {
+    $purli = (new \Purli\Purli());
+    
+    if ($purli->getHandlerType() === \Purli\Purli::CURL) {
+        curl_setopt($purli->getHandler(), CURLOPT_TIMEOUT, 10);
+    }
+    
+    $purli
+        ->get('http://www.example.com')
+        ->close();
+
+    $response = $purli->response();
+
+    echo $response->asText();
+} catch(\Exception $e) {
+    echo $e->getMessage();
 }
 ```
 

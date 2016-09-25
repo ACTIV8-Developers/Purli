@@ -67,3 +67,22 @@ try {
 } catch(\Exception $e) {
     echo $e->getMessage();
 }
+
+// Setting custom CURL option
+try {
+    $purli = (new \Purli\Purli());
+
+    if ($purli->getHandlerType() === \Purli\Purli::CURL) {
+        curl_setopt($purli->getHandler(), CURLOPT_TIMEOUT, 10);
+    }
+
+    $purli
+        ->get('http://localhost/Purli/Tests/testresponse.php')
+        ->close();
+
+    $response = $purli->response();
+
+    echo $response->asText();
+} catch(\Exception $e) {
+    echo $e->getMessage();
+}

@@ -43,7 +43,7 @@ class Curl implements HandlerInterface
 	/**
 	 * Response
 	 *
-	 * @var string
+	 * @var PurliResponse
 	 */
 	protected $response = null;
 
@@ -363,7 +363,7 @@ class Curl implements HandlerInterface
 		}
 
 		if (!isset($this->headers['Content-Type']) && in_array($method, ['POST', 'PUT', 'DELETE'])) {
-			$this->headers['Connection'] = 'application/x-www-form-urlencoded';
+			$this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
 		}
 
 		if (!isset($this->headers['Content-Length'])) {
