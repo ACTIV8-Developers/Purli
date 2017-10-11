@@ -59,6 +59,20 @@ class Curl implements HandlerInterface
 	 */
 	protected $keepAlive = false;
 
+    /**
+     * Proxy IP address
+     *
+     * @var string
+     */
+	private $proxyIp = null;
+
+    /**
+     * Proxy port
+     *
+     * @var string|int
+     */
+	private $proxyPort = null;
+
 	/**
 	 * Set request headers
 	 *
@@ -297,6 +311,9 @@ class Curl implements HandlerInterface
 
 		// Set uri
 		curl_setopt($this->curl, CURLOPT_URL, $uri);
+		// Set proxy
+        if ($this->proxyIp)
+            curl_setopt($this->curl, CURLOPT_PROXY, sprintf('%s:%s', $this->proxyIp, $this->proxyPort));
 
         $data = '';
 
@@ -377,6 +394,17 @@ class Curl implements HandlerInterface
 	{
 		$this->keepAlive = $keepAlive;
 	}
+
+    /**
+     * Sets proxy parameters
+     *
+     * @param string $ip
+     * @param string|int $port
+     */
+	public function setProxy($ip, $port) {
+        $this->proxyIp = $ip;
+        $this->proxyPort = $port;
+    }
 	
 	/**
 	 * @return mixed

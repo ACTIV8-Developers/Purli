@@ -64,6 +64,20 @@ class Socket implements HandlerInterface
     protected $keepAlive = false;
 
     /**
+     * Proxy IP address
+     *
+     * @var string
+     */
+    private $proxyIp = null;
+
+    /**
+     * Proxy port
+     *
+     * @var string|int
+     */
+    private $proxyPort = null;
+
+    /**
      * @param $uri
      * @return self
      */
@@ -130,14 +144,26 @@ class Socket implements HandlerInterface
                 $port = 80;
         }
 
-        $this->socket = fsockopen($scheme . $parsedUri['host'], isset($parsedUri['port'])?$parsedUri['port']:$port, $errno, $errstr, $this->connectionTimeout);
+        $this->socket = fsockopen(
+            $this->proxyIp
+                ? $this->proxyIp
+                : $scheme . $parsedUri['host'],
+            $this->proxyPort
+                ? $this->proxyPort
+                : (isset($parsedUri['port'])?$parsedUri['port']:$port),
+            $errno,
+            $errstr,
+            $this->connectionTimeout
+        );
 
         if (!$this->socket) {
             throw new PurliException(sprintf("Connection failed: %s, %s", $errno, $errstr));
         } else {
             $this->fillRequest($method, $data);
 
-            $http  = $method . " " . $parsedUri['path'] . " HTTP/1.1\r\n";
+            // added scheme + host, needed when using proxy
+            $http  = $method . " " . $parsedUri['scheme'] . "://" . $parsedUri['host'] . $parsedUri['path'] .
+                     " HTTP/1.1\r\n";
             $http .= "Host: " . $parsedUri['host'] . "\r\n";
 
             foreach ($this->headers as $key => $value) {
@@ -255,6 +281,17 @@ class Socket implements HandlerInterface
     public function setKeepAlive($keepAlive)
     {
         $this->keepAlive = $keepAlive;
+    }
+
+    /**
+     * Sets proxy parameters
+     *
+     * @param string $ip
+     * @param string|int $port
+     */
+    public function setProxy($ip, $port) {
+        $this->proxyIp = $ip;
+        $this->proxyPort = $port;
     }
 
     /**

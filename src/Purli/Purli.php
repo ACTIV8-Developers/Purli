@@ -18,6 +18,7 @@ use Purli\Interfaces\HandlerInterface;
  * @method setUserAgent($agent)
  * @method setConnectionTimeout($timeout)
  * @method setKeepAlive($keepAlive)
+ * @method setProxy($ip, $port)
  * @method response()
  * @method close()
  * @method getHandler()
