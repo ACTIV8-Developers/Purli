@@ -78,6 +78,13 @@ class Socket implements HandlerInterface
     private $proxyPort = null;
 
     /**
+     * Not waiting response
+     *
+     * @var bool
+     */
+    private $noWaitResponse = false;
+
+    /**
      * @param $uri
      * @return self
      */
@@ -184,6 +191,8 @@ class Socket implements HandlerInterface
             }
             
             fwrite($this->socket, $http);
+            if ($this->noWaitResponse)
+                return $this;
 
             $response = "";
             while (!feof($this->socket)) {
@@ -292,6 +301,15 @@ class Socket implements HandlerInterface
     public function setProxy($ip, $port) {
         $this->proxyIp = $ip;
         $this->proxyPort = $port;
+    }
+
+    /**
+     * Not waiting for response
+     *
+     * @param bool $flag
+     */
+    public function setNoWaitResponse($flag=true) {
+        $this->noWaitResponse = $flag;
     }
 
     /**

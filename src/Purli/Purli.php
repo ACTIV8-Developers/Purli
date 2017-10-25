@@ -19,10 +19,11 @@ use Purli\Interfaces\HandlerInterface;
  * @method setConnectionTimeout($timeout)
  * @method setKeepAlive($keepAlive)
  * @method setProxy($ip, $port)
- * @method response()
+ * @method PurliResponse response()
  * @method close()
  * @method getHandler()
  * @method getHandlerType()
+ * @method setNoWaitResponse()
  */
 class Purli
 {

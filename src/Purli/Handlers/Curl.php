@@ -73,6 +73,13 @@ class Curl implements HandlerInterface
      */
 	private $proxyPort = null;
 
+    /**
+     * Not waiting response
+     *
+     * @var bool
+     */
+    private $noWaitResponse = false;
+
 	/**
 	 * Set request headers
 	 *
@@ -315,6 +322,9 @@ class Curl implements HandlerInterface
         if ($this->proxyIp)
             curl_setopt($this->curl, CURLOPT_PROXY, sprintf('%s:%s', $this->proxyIp, $this->proxyPort));
 
+        if ($this->noWaitResponse)
+            curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, false);
+
         $data = '';
 
         if (is_array($this->parameters)) {
@@ -405,7 +415,16 @@ class Curl implements HandlerInterface
         $this->proxyIp = $ip;
         $this->proxyPort = $port;
     }
-	
+
+    /**
+     * Not waiting for response
+     *
+     * @param bool $flag
+     */
+    public function setNoWaitResponse($flag=true) {
+        $this->noWaitResponse = $flag;
+    }
+
 	/**
 	 * @return mixed
 	 */
