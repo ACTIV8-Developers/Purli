@@ -101,8 +101,10 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals($param, $response->asArray()['foo']);
     }
 
+    /**
+     * @expectedException \Purli\PurliException
+     */
     public function testException() {
-        $this->expectException(\Purli\PurliException::class);
 
         $purli = new \Purli\Purli();
 
