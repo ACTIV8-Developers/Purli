@@ -2,6 +2,7 @@ Purli
 =
 [![DUB](https://img.shields.io/dub/l/vibe-d.svg)](http://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](https://github.com/Kajna/Purli/releases)
+[![Build Status](https://travis-ci.org/Kajna/Purli.svg)](https://travis-ci.org/Kajna/Purli)
 
 Purli (PHP Url Interface) is lightweight library with object-oriented interface for sending HTTP requests. 
 
@@ -156,8 +157,10 @@ try {
 
 Running tests
 =
+Purli uses [PHPUnit](https://phpunit.de/) for testing
 ```$xslt
-phpunit --configuration tests/phpunit.xml
+cd tests
+phpunit
 ```
 
 Author
