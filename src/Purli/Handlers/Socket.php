@@ -85,6 +85,11 @@ class Socket implements HandlerInterface
     private $noWaitResponse = false;
 
     /**
+     * @var string
+     */
+    private $lastRequest = '';
+
+    /**
      * @param $uri
      * @return self
      */
@@ -123,7 +128,7 @@ class Socket implements HandlerInterface
     /**
      * @param $uri
      * @param $method
-     * @return void|static
+     * @return self
      * @throws PurliException
      */
     public function request($uri, $method)
@@ -169,12 +174,16 @@ class Socket implements HandlerInterface
             $this->fillRequest($method, $data);
 
             // added scheme + host, needed when using proxy
-            $http  = $method . " " . $parsedUri['scheme'] . "://" . $parsedUri['host'] . $parsedUri['path'] .
-                     " HTTP/1.1\r\n";
+            $http  = $method . " " .
+                $parsedUri['scheme'] . "://" .
+                $parsedUri['host'] .
+                (isset($parsedUri['path'])?$parsedUri['path']:'') .
+                (isset($parsedUri['query'])?"?".$parsedUri['query']:'') .
+                " HTTP/1.1\r\n";
             $http .= "Host: " . $parsedUri['host'] . "\r\n";
 
             foreach ($this->headers as $key => $value) {
-                $http .= $key . ": " . $value . "\r\n";
+                $http .= $key . ":" . $value . "\r\n";
             }
 
             switch ($method) {
@@ -189,11 +198,18 @@ class Socket implements HandlerInterface
                     $http .= "\r\n";
                     break;
             }
-            
+
+            // Write HTTP header and body to stream
             fwrite($this->socket, $http);
+
+            // Remember last request
+            $this->lastRequest = $http;
+
+            // Return if no wait options is checked
             if ($this->noWaitResponse)
                 return $this;
 
+            // Gather response
             $response = "";
             while (!feof($this->socket)) {
                 $response .= fgets($this->socket, 4096);
@@ -246,6 +262,13 @@ class Socket implements HandlerInterface
     }
 
     /**
+     * @return string
+     */
+    public function getInfo() {
+        return $this->lastRequest;
+    }
+
+    /**
      * @param $agent
      * @return self
      */
@@ -286,10 +309,12 @@ class Socket implements HandlerInterface
 
     /**
      * @param boolean $keepAlive
+     * @return $this
      */
     public function setKeepAlive($keepAlive)
     {
         $this->keepAlive = $keepAlive;
+        return $this;
     }
 
     /**
@@ -297,19 +322,23 @@ class Socket implements HandlerInterface
      *
      * @param string $ip
      * @param string|int $port
+     * @return $this
      */
     public function setProxy($ip, $port) {
         $this->proxyIp = $ip;
         $this->proxyPort = $port;
+        return $this;
     }
 
     /**
      * Not waiting for response
      *
      * @param bool $flag
+     * @return $this
      */
     public function setNoWaitResponse($flag=true) {
         $this->noWaitResponse = $flag;
+        return $this;
     }
 
     /**

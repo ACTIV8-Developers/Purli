@@ -45,14 +45,15 @@ class PurliResponse implements ResponseInterface
         // Extract the version and status from the first header
         $versionAndStatus = array_shift($headers);
         preg_match('#HTTP/(\d\.\d)\s(\d\d\d)\s(.*)#', $versionAndStatus, $matches);
-        $this->headers['Http-Version'] = $matches[1];
-        $this->headers['Status-Code'] = $matches[2];
-        $this->headers['Status'] = $matches[2].' '.$matches[3];
+        $this->headers['http-version'] = $matches[1];
+        $this->headers['status-code'] = $matches[2];
+        $this->headers['status'] = $matches[2] . ' ' . $matches[3];
         
         // Convert headers into an associative array
         foreach ($headers as $header) {
             preg_match('#(.*?)\:\s(.*)#', $header, $matches);
-            $this->headers[$matches[1]] = $matches[2];
+            $key = $this->normalizeHeader($matches[1]);
+            $this->headers[$key] = $matches[2];
         }
     }
     
@@ -100,10 +101,15 @@ class PurliResponse implements ResponseInterface
      */
 	public function headers($key = null)
 	{
+	    if ($key === null) {
+	        return $this->headers;
+        }
+
+	    $key = $this->normalizeHeader($key);
 		if (isset($this->headers[$key])) {
 			return $this->headers[$key];
 		}
-		return $this->headers;
+		return null;
 	}
 
     /**
@@ -126,5 +132,13 @@ class PurliResponse implements ResponseInterface
             return true;
         }
         return false;
+    }
+
+    /**
+     * @param $value
+     * @return mixed
+     */
+    public function normalizeHeader($value) {
+        return strtolower($value);
     }
 }

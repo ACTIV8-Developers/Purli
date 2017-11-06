@@ -1,7 +1,7 @@
 Purli
 =
 [![DUB](https://img.shields.io/dub/l/vibe-d.svg)](http://opensource.org/licenses/MIT)
-[![Version](https://img.shields.io/badge/version-1.0.0rc-orange.svg)](https://github.com/Kajna/Purli/releases)
+[![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](https://github.com/Kajna/Purli/releases)
 
 Purli (PHP Url Interface) is lightweight library with object-oriented interface for sending HTTP requests. 
 
@@ -101,10 +101,8 @@ try {
     $purli = (new \Purli\Purli(\Purli\Purli::SOCKET))
             ->setConnectionTimeout(3)
             ->setHeader('Content-Type', 'application/json')
-            ->setHeader('Connection', 'Close')
-            ->setHeader('Content-Length', strlen($json))
             ->setParams($json)
-            ->post('http://www.example.com')
+            ->put('http://www.example.com')
             ->close();
     
     $response = $purli->response();
@@ -112,6 +110,24 @@ try {
     print_r($response->asObject());
 } catch(\Exception $e) {
 	echo $e->getMessage();
+}
+```
+
+#### Using proxy server to make request
+```php
+try {
+    $purli = (new \Purli\Purli());
+    
+    $purli
+        ->setProxy(PROXY_ADDRESS, PROXY_PORT)
+        ->get('http://www.example.com')
+        ->close();
+
+    $response = $purli->response();
+
+    echo $response->asText();
+} catch(\Exception $e) {
+    echo $e->getMessage();
 }
 ```
 
@@ -138,9 +154,15 @@ try {
 }
 ```
 
+Running tests
+=
+```$xslt
+phpunit --configuration tests/phpunit.xml
+```
+
 Author
 =
-Author of library is Milos Kajnaco 
+Milos Kajnaco 
 milos@caenazzo.com
 
 Licence
