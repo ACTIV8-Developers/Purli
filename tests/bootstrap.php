@@ -13,7 +13,7 @@ require __DIR__ . '/../vendor/autoload.php';
 date_default_timezone_set('Europe/Belgrade');
 /*
 |--------------------------------------------------------------------------
-| Mockup test server
+| Mock up test server
 |--------------------------------------------------------------------------
 */
 define('SERVER_URL', 'http://'.WEB_SERVER_HOST.':'.WEB_SERVER_PORT);
@@ -26,7 +26,7 @@ $command = sprintf(
 );
 
 // Execute the command and store the process ID
-$output = array();
+$output = [];
 exec($command, $output);
 $pid = (int) $output[0];
 

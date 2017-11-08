@@ -85,9 +85,9 @@ class Socket implements HandlerInterface
     private $noWaitResponse = false;
 
     /**
-     * @var string
+     * @var array
      */
-    private $lastRequest = '';
+    private $transferInfo = [];
 
     /**
      * @param $uri
@@ -114,6 +114,17 @@ class Socket implements HandlerInterface
     public function put($uri)
     {
         return $this->request($uri, "PUT");
+    }
+
+    /**
+     * @param $uri
+     * @return $this
+     * @throws PurliException
+     */
+    public function patch($uri)
+    {
+        $this->request($uri, 'PATCH');
+        return $this;
     }
 
     /**
@@ -174,7 +185,7 @@ class Socket implements HandlerInterface
             $this->fillRequest($method, $data);
 
             // added scheme + host, needed when using proxy
-            $http  = $method . " " .
+            $http = $method . " " .
                 $parsedUri['scheme'] . "://" .
                 $parsedUri['host'] .
                 (isset($parsedUri['path'])?$parsedUri['path']:'') .
@@ -183,13 +194,17 @@ class Socket implements HandlerInterface
             $http .= "Host: " . $parsedUri['host'] . "\r\n";
 
             foreach ($this->headers as $key => $value) {
-                $http .= $key . ":" . $value . "\r\n";
+                $http .= $key . ": " . $value . "\r\n";
             }
+
+            // Remember last request
+            $this->transferInfo['request_header'] = $http;
 
             switch ($method) {
                 case "POST":
                 case "PUT":
                 case "DELETE":
+                case "PATCH":
                     $http .= "\r\n";
                     $http .= $data;
                     break;
@@ -201,9 +216,6 @@ class Socket implements HandlerInterface
 
             // Write HTTP header and body to stream
             fwrite($this->socket, $http);
-
-            // Remember last request
-            $this->lastRequest = $http;
 
             // Return if no wait options is checked
             if ($this->noWaitResponse)
@@ -236,7 +248,7 @@ class Socket implements HandlerInterface
         }
 
         if (!isset($this->headers['Content-Length']) && in_array($method, ['POST', 'PUT', 'DELETE'])) {
-            $this->headers['Content-Length'] = strlen($data);
+            $this->headers['Content-Length'] = mb_strlen($data);
         }
     }
 
@@ -262,10 +274,10 @@ class Socket implements HandlerInterface
     }
 
     /**
-     * @return string
+     * @return array
      */
     public function getInfo() {
-        return $this->lastRequest;
+        return $this->transferInfo;
     }
 
     /**

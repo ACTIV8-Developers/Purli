@@ -8,7 +8,7 @@ Purli (PHP Url Interface) is lightweight library with object-oriented interface 
 
 Installing
 =
-This package is available via Composer:
+This package is available via [Composer](https://getcomposer.org/):
 
 ```json
 {
@@ -80,7 +80,6 @@ try {
     $purli = (new \Purli\Purli())
         ->setUserAgent('curl 7.16.1 (i386-portbld-freebsd6.2) libcurl/7.16.1 OpenSSL/0.9.7m zlib/1.2.3')
         ->setHeader('Content-Type', 'text/xml')
-        ->setHeader('Content-Length', strlen($data))
         ->setParams($data)
         ->post('http://www.example.com')
         ->close();
@@ -157,7 +156,7 @@ try {
 
 Running tests
 =
-Purli uses [PHPUnit](https://phpunit.de/) for testing
+Purli uses [PHPUnit](https://phpunit.de/) for testing, navigate to project root directory and run command:
 ```$xslt
 cd tests
 phpunit
@@ -167,6 +166,11 @@ Author
 =
 Milos Kajnaco 
 milos@caenazzo.com
+
+Contributors
+=
+Nemanja Nikolic
+nemanja@massvision.net
 
 Licence
 =

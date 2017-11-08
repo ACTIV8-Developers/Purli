@@ -26,33 +26,34 @@ class CurlTest extends \PHPUnit_Framework_TestCase
 
         $response = $purli->response();
 
-        $code = (int)$response->headers("Status-Code");
+        $code = (int)$response->statusCode();
         $this->assertTrue($code > 200 && $code < 400 );
     }
 
     public function testGetWithParams()
     {
-        $param = 'test_param';
+        $param1 = 'test_param1';
+        $param2 = 'test_param2';
 
         $purli = new \Purli\Purli();
 
         $purli
-            ->get(SERVER_URL . '/get.php?foo='.$param)
+            ->get(SERVER_URL . '/get.php?foo='.$param1 . '&bar='.$param2)
             ->close();
 
         $response = $purli->response();
 
-        $this->assertEquals("foo" . $param, $response->asText());
+        $this->assertEquals("foo" . $param1.$param2, $response->asText());
 
         $purli = new \Purli\Purli();
 
         $purli
-            ->get(SERVER_URL . '/get.php/?foo='.$param)
+            ->get(SERVER_URL . '/get.php/?foo='.$param1)
             ->close();
 
         $response = $purli->response();
 
-        $this->assertEquals("foo" . $param, $response->asText());
+        $this->assertEquals("foo" . $param1, $response->asText());
     }
 
     public function testPost()
@@ -85,7 +86,65 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         $this->assertEquals("1", $response->asText());
     }
 
-    public function testJson()
+    public function testPatch()
+    {
+        $param = 'bar';
+
+        $purli = new \Purli\Purli();
+        $purli
+            ->setParams(['foo' => $param])
+            ->put(SERVER_URL . '/patch.php')
+            ->close();
+
+        $response = $purli->response();
+
+        $this->assertEquals("1", $response->asText());
+    }
+
+    public function testDelete()
+    {
+        $param = 'bar';
+
+        $purli = new \Purli\Purli();
+        $purli
+            ->setParams(['foo' => $param])
+            ->delete(SERVER_URL . '/delete.php')
+            ->close();
+
+        $response = $purli->response();
+
+        $this->assertEquals("1", $response->asText());
+    }
+
+    public function testGetJson()
+    {
+        $purli = new \Purli\Purli();
+        $purli
+            ->get(SERVER_URL . '/json.php')
+            ->close();
+
+        $response = $purli->response();
+
+        $this->assertTrue($response->isJson());
+
+        $this->assertEquals('', $response->asArray()['foo']);
+    }
+
+    public function testGetXml()
+    {
+        $purli = new \Purli\Purli();
+        $purli
+            ->get(SERVER_URL . '/xml.php')
+            ->close();
+
+        $response = $purli->response();
+
+        $this->assertTrue($response->isXml());
+
+        $this->assertEquals('foo', $response->asObject()->user);
+    }
+
+    public function testPostJson()
     {
         $param = 'test';
 
@@ -99,6 +158,35 @@ class CurlTest extends \PHPUnit_Framework_TestCase
         $response = $purli->response();
 
         $this->assertEquals($param, $response->asArray()['foo']);
+    }
+
+    public function testPostXml()
+    {
+        $param = 'foo';
+
+        $purli = new \Purli\Purli();
+        $purli
+            ->setHeader('Content-Type', 'text/xml')
+            ->setParams('<root><user>foo</user><pass>bar</pass></root>')
+            ->post(SERVER_URL . '/xml.php')
+            ->close();
+
+        $response = $purli->response();
+
+        $this->assertEquals($param, $response->asObject()->user);
+    }
+
+    public function testGetInfo()
+    {
+        $purli = new \Purli\Purli();
+
+        $purli->get(SERVER_URL . '/get.php');
+
+        $info = $purli->getInfo();
+
+        $purli->close();
+
+        $this->assertContains("HTTP/1.1", $info['request_header']);
     }
 
     /**

@@ -30,6 +30,12 @@ interface HandlerInterface
      * @param $uri
      * @return self
      */
+    public function patch($uri);
+
+    /**
+     * @param $uri
+     * @return self
+     */
     public function delete($uri);
 
     /**

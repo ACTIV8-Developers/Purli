@@ -28,4 +28,9 @@ interface ResponseInterface
      * @return string|array
      */
     public function headers($key = null);
+
+    /**
+     * @return mixed
+     */
+    public function statusCode();
 }

@@ -96,6 +96,13 @@ class PurliResponse implements ResponseInterface
     }
 
     /**
+     * @return array|string
+     */
+    public function statusCode() {
+        return $this->headers('Status-code');
+    }
+
+    /**
      * @param string $key
      * @return string|array
      */

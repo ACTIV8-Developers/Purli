@@ -31,7 +31,7 @@ class Purli
     /**
      * Version
      */
-    const VERSION = '1.0.0-rc2';
+    const VERSION = '1.0.0';
 
     /**
      * Use CURL handler

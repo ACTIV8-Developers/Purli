@@ -111,6 +111,7 @@ class Curl implements HandlerInterface
         // Set some default CURL options
         curl_setopt($this->curl, CURLOPT_HEADER, true);
         curl_setopt($this->curl, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($this->curl, CURLINFO_HEADER_OUT, true);
 
         // Set any custom CURL options
         foreach ($this->options as $option => $value) {
@@ -297,6 +298,17 @@ class Curl implements HandlerInterface
      * @return $this
      * @throws PurliException
      */
+    public function patch($uri)
+    {
+        $this->request($uri, 'PATCH');
+        return $this;
+    }
+
+    /**
+     * @param $uri
+     * @return $this
+     * @throws PurliException
+     */
     public function delete($uri)
     {
         $this->request($uri, 'DELETE');
@@ -318,6 +330,7 @@ class Curl implements HandlerInterface
 
         // Set uri
         curl_setopt($this->curl, CURLOPT_URL, $uri);
+
         // Set proxy
         if ($this->proxyIp)
             curl_setopt($this->curl, CURLOPT_PROXY, sprintf('%s:%s', $this->proxyIp, $this->proxyPort));
@@ -371,7 +384,7 @@ class Curl implements HandlerInterface
         }
 
         if (!isset($this->headers['Content-Length']) && in_array($method, ['POST', 'PUT', 'DELETE'])) {
-            $this->headers['Content-Length'] = strlen($data);
+            $this->headers['Content-Length'] = mb_strlen($data);
         }
     }
 
