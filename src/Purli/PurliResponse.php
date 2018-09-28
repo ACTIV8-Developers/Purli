@@ -45,15 +45,14 @@ class PurliResponse implements ResponseInterface
         // Extract the version and status from the first header
         $versionAndStatus = array_shift($headers);
         preg_match('#HTTP/(\d\.\d)\s(\d\d\d)\s(.*)#', $versionAndStatus, $matches);
-        $this->headers['http-version'] = $matches[1];
-        $this->headers['status-code'] = $matches[2];
-        $this->headers['status'] = $matches[2] . ' ' . $matches[3];
+        $this->headers['Http-Version'] = $matches[1];
+        $this->headers['Status-Code'] = $matches[2];
+        $this->headers['Status'] = $matches[2].' '.$matches[3];
         
         // Convert headers into an associative array
         foreach ($headers as $header) {
             preg_match('#(.*?)\:\s(.*)#', $header, $matches);
-            $key = $this->normalizeHeader($matches[1]);
-            $this->headers[$key] = $matches[2];
+            $this->headers[$matches[1]] = $matches[2];
         }
     }
     
@@ -82,12 +81,15 @@ class PurliResponse implements ResponseInterface
     /**
      * @return \stdClass
      */
-    public function asObject()
+    public function asObject($LIBXML_NOCDATA = false)
     {
         if ($this->isJson()) {
             return json_decode($this->body);
         } else if ($this->isXml()) {
-            return simplexml_load_string($this->body);
+            if (!$LIBXML_NOCDATA)
+                return simplexml_load_string($this->body);
+            else
+                return simplexml_load_string($this->body, null, LIBXML_NOCDATA);
         } else {
             $class = new \stdClass();
             $class->body = $this->body;
@@ -96,27 +98,15 @@ class PurliResponse implements ResponseInterface
     }
 
     /**
-     * @return array|string
-     */
-    public function statusCode() {
-        return $this->headers('Status-code');
-    }
-
-    /**
      * @param string $key
      * @return string|array
      */
 	public function headers($key = null)
 	{
-	    if ($key === null) {
-	        return $this->headers;
-        }
-
-	    $key = $this->normalizeHeader($key);
 		if (isset($this->headers[$key])) {
 			return $this->headers[$key];
 		}
-		return null;
+		return $this->headers;
 	}
 
     /**
@@ -139,13 +129,5 @@ class PurliResponse implements ResponseInterface
             return true;
         }
         return false;
-    }
-
-    /**
-     * @param $value
-     * @return mixed
-     */
-    public function normalizeHeader($value) {
-        return strtolower($value);
     }
 }
