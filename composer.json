@@ -1,11 +1,11 @@
 {
-    "name": "kajna/purli",
+    "name": "ACTIV8-Developers/purli",
     "description": " Lightweight library with Object-Oriented interface for sending HTTP requests",
     "keywords": ["http", "https", "curl", "socket", "rest", "json", "xml"],
     "authors": [
         {
             "name": "Milos Kajnaco",
-            "email": "milos@caenazzo.com"
+            "email": "milos@activ8.rs"
         }
     ],
     "license": "MIT",
