@@ -1,5 +1,5 @@
 {
-    "name": "ACTIV8-Developers/purli",
+    "name": "activ8-developers/purli",
     "description": " Lightweight library with Object-Oriented interface for sending HTTP requests",
     "keywords": ["http", "https", "curl", "socket", "rest", "json", "xml"],
     "authors": [
