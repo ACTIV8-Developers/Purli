@@ -340,7 +340,7 @@ class Curl implements HandlerInterface
 
         $data = '';
 
-        if (is_array($this->parameters)) {
+        if (is_array($this->parameters) && $this->headers['Content-Type'] !== 'multipart/form-data') {
             foreach ($this->parameters as $key => $value) {
                 $data .= ($data ? '&' : '') . urlencode($key) . '=' . urlencode($value);
             }
@@ -381,10 +381,6 @@ class Curl implements HandlerInterface
 
         if (!isset($this->headers['Content-Type']) && in_array($method, ['POST', 'PUT', 'DELETE'])) {
             $this->headers['Content-Type'] = 'application/x-www-form-urlencoded';
-        }
-
-        if (!isset($this->headers['Content-Length']) && in_array($method, ['POST', 'PUT', 'DELETE'])) {
-            $this->headers['Content-Length'] = mb_strlen($data);
         }
     }
 
