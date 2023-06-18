@@ -2,9 +2,9 @@ Purli
 =
 [![DUB](https://img.shields.io/dub/l/vibe-d.svg)](http://opensource.org/licenses/MIT)
 [![Version](https://img.shields.io/badge/version-1.0.0-green.svg)](https://github.com/Kajna/Purli/releases)
-[![Build Status](https://travis-ci.org/Kajna/Purli.svg)](https://travis-ci.org/Kajna/Purli)
 
-Purli (PHP Url Interface) is lightweight library with object-oriented interface for sending HTTP requests. 
+
+Purli (PHP Url Interface) is the lightweight library with the object-oriented interface for sending HTTP requests. 
 
 Installing
 =
@@ -22,7 +22,7 @@ Usage examples
 =
 
 #### Fetching data using GET method and CURL handler
-Minimal example, Purli by default uses CURL handler if available otherwise fallback to socket.
+Minimal example, Purli by default uses CURL handler if available otherwise fallback to the socket.
 ```php
 try {
     $purli = (new \Purli\Purli())
@@ -38,7 +38,7 @@ try {
 ```
 
 #### Fetching data using GET method and socket handler
-If explicitly set Purli will use PHP sockets to make request regardless if CURL is installed or not
+If explicitly set Purli will use PHP sockets to make requests regardless if CURL is installed or not
 ```php
 try {
     $purli = (new \Purli\Purli(\Purli\Purli::SOCKET))
