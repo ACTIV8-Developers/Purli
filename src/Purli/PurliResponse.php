@@ -14,7 +14,7 @@ class PurliResponse implements ResponseInterface
      * An associative array containing the response's headers
      *
      * @var array
-    **/
+     **/
     protected $headers = [];
 
     /**
@@ -26,14 +26,21 @@ class PurliResponse implements ResponseInterface
 
     /**
      * Accepts the result of a request as a string
-	 *
+     *
      * @param string $response
      */
     public function __construct($response)
     {
-        // Headers regex
-        $pattern = '#HTTP/\d\.\d.*?$.*?\r\n\r\n#ims';
-        
+        $httpPattern = '#HTTP/(\d).*$#s';
+        preg_match_all($httpPattern, $response, $matches);
+        $httpVersion = (int) $matches[1][0];
+        if ($httpVersion == 2) {
+            $pattern = '#HTTP/\d.*?$.*?\r?\n\r?\n#ims';
+            $pattern2 = '#HTTP/(\d)\s(\d\d\d)\s(.*)#';
+        } else {
+            $pattern = '#HTTP/\d\.\d.*?$.*?\r\n\r\n#ims';
+            $pattern2 = '#HTTP/(\d\.\d)\s(\d\d\d)\s(.*)#';
+        }
         // Extract headers from response
         preg_match_all($pattern, $response, $matches);
         $headersString = array_pop($matches[0]);
@@ -41,14 +48,14 @@ class PurliResponse implements ResponseInterface
 
         // Remove headers from the response body
         $this->body = str_replace($headersString, '', $response);
-        
+
         // Extract the version and status from the first header
         $versionAndStatus = array_shift($headers);
-        preg_match('#HTTP/(\d\.\d)\s(\d\d\d)\s(.*)#', $versionAndStatus, $matches);
+        preg_match($pattern2, $versionAndStatus, $matches);
         $this->headers['http-version'] = $matches[1];
         $this->headers['status-code'] = $matches[2];
         $this->headers['status'] = $matches[2] . ' ' . $matches[3];
-        
+
         // Convert headers into an associative array
         foreach ($headers as $header) {
             preg_match('#(.*?)\:\s(.*)#', $header, $matches);
@@ -56,7 +63,7 @@ class PurliResponse implements ResponseInterface
             $this->headers[$key] = $matches[2];
         }
     }
-    
+
     /**
      * @return string
      */
@@ -106,18 +113,18 @@ class PurliResponse implements ResponseInterface
      * @param string $key
      * @return string|array
      */
-	public function headers($key = null)
-	{
-	    if ($key === null) {
-	        return $this->headers;
+    public function headers($key = null)
+    {
+        if ($key === null) {
+            return $this->headers;
         }
 
-	    $key = $this->normalizeHeader($key);
-		if (isset($this->headers[$key])) {
-			return $this->headers[$key];
-		}
-		return null;
-	}
+        $key = $this->normalizeHeader($key);
+        if (isset($this->headers[$key])) {
+            return $this->headers[$key];
+        }
+        return null;
+    }
 
     /**
      * @return bool
